@@ -33,7 +33,7 @@ function createTreeLights() {
 
   let indexGlobal = 0;
 
-  // Corazón más alto y algo más estrecho para que la parte superior esté bien redondeada.
+  // Corazón alto y algo estrecho para que la parte superior esté bien redondeada.
   const heartCenterY = baseY + height * 0.50;
   const heartHalfWidth = baseRadius * 0.28;
   const heartHalfHeight = height * 0.26;
@@ -120,7 +120,7 @@ function placeLed(tree, x, y, baseRadius, idx,
   led.style.width = `${size}px`;
   led.style.height = `${size}px`;
   led.style.opacity = opacity;
-  led.style.transform = `translateZ(${z}px)`;
+  led.style.transform = `translateZ(${z})`;
 
   tree.appendChild(led);
 }
@@ -157,7 +157,7 @@ function setupStaticLights() {
   body.classList.add('lights-on');
 }
 
-// 1) Brillo local al mover el dedo / ratón sobre el árbol
+// Brillo local al mover el dedo / ratón sobre el árbol
 function setupTreeGlowFollowPointer() {
   const treeWrapper = document.querySelector('.tree-wrapper');
   if (!treeWrapper) return;
@@ -220,7 +220,7 @@ function setupTreeGlowFollowPointer() {
   });
 }
 
-// 2) Estrella reactiva: destello global al tocarla
+// Estrella reactiva: destello global muy intenso al tocarla
 function setupStarReactiveGlow() {
   const star = document.querySelector('.star');
   const body = document.body;
@@ -237,7 +237,7 @@ function setupStarReactiveGlow() {
     setTimeout(() => {
       body.classList.remove('tree-flash');
       isFlashing = false;
-    }, 1500);
+    }, 1300);
   };
 
   star.addEventListener('click', flash);
