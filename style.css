@@ -1,0 +1,334 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:
+    radial-gradient(circle at top, #020617 0%, #020617 45%, #000 100%);
+  color: #e5e7eb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+}
+
+/* ===== LUCES ===== */
+.led {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow: 0 0 4px currentColor;
+  opacity: 0.22;
+  transform: scale(0.9);
+  animation: none;
+}
+
+/* Luces del corazón: más grandes y brillantes */
+.led-heart {
+  color: #fb7185;
+  box-shadow: 0 0 10px rgba(248, 113, 113, 1);
+}
+
+/* Modo corazón: sube un poco más el brillo del corazón */
+body.lights-heart .led {
+  opacity: 0.12;
+  transform: scale(0.85);
+}
+
+body.lights-heart .led-heart {
+  opacity: 1;
+  transform: scale(1.2);
+  animation: led-heart 1.8s ease-in-out infinite;
+}
+
+/* Modo todas encendidas: parpadeo general suave */
+body.lights-on .led {
+  animation: led-twinkle 2.4s ease-in-out infinite;
+}
+
+/* Corazón */
+@keyframes led-heart {
+  0%   { opacity: 0.6; transform: scale(1.05); }
+  35%  { opacity: 1;   transform: scale(1.2);  }
+  65%  { opacity: 0.7; transform: scale(1.1);  }
+  100% { opacity: 0.6; transform: scale(1.05); }
+}
+
+/* Parpadeo general */
+@keyframes led-twinkle {
+  0%   { opacity: 0.25; transform: scale(0.9); }
+  35%  { opacity: 1;    transform: scale(1);   }
+  65%  { opacity: 0.5;  transform: scale(0.95);}
+  100% { opacity: 0.25; transform: scale(0.9); }
+}
+
+/* ===== ESCENA ===== */
+
+.scene {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  perspective: 1100px;
+}
+
+/* Corazón gigante muy suave detrás del árbol */
+.scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: min(46vh, 360px);
+  height: min(40vh, 320px);
+  top: 6vh;
+  left: 50%;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(248, 113, 113, 0.55), transparent 55%),
+    radial-gradient(circle at 70% 30%, rgba(248, 113, 113, 0.55), transparent 55%);
+  filter: blur(40px);
+  opacity: 0.32;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Nieve */
+#snow-layer {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Texto */
+.content {
+  position: absolute;
+  top: 5vh;
+  text-align: center;
+  padding: 0 1rem;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.content h1 {
+  margin: 0 0 0.4rem;
+  font-size: clamp(2.2rem, 3.4vw, 3.2rem);
+  letter-spacing: 0.14em;
+}
+
+.message {
+  margin: 0 0 0.5rem;
+  font-size: clamp(0.9rem, 1.1vw, 1.15rem);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fade-in-up 0.6s ease-out forwards;
+  animation-delay: 1.6s;
+}
+
+/* ===== ÁRBOL ===== */
+
+.tree-wrapper {
+  position: relative;
+  width: 480px;
+  height: 640px;
+  transform-style: preserve-3d;
+  transform-origin: bottom center;
+  z-index: 2;
+}
+
+.tree {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform-style: preserve-3d;
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotateX(25deg);
+}
+
+/* Sombra */
+.tree::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 360px;
+  height: 70px;
+  background: radial-gradient(circle at center, #020617, #000 70%);
+  filter: blur(10px);
+  opacity: 0.85;
+}
+
+/* Follaje */
+.foliage {
+  position: absolute;
+  left: 50%;
+  bottom: 60px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 0 14px rgba(22, 163, 74, 0.6));
+}
+
+.layer {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: solid transparent;
+  border-right: solid transparent;
+  border-bottom: solid #14532d;
+  opacity: 0;
+  animation: layer-pop 0.4s ease-out forwards;
+}
+
+.layer-1 {
+  bottom: 290px;
+  border-width: 0 70px 120px 70px;
+  animation-delay: 0.6s;
+}
+.layer-2 {
+  bottom: 240px;
+  border-width: 0 105px 135px 105px;
+  animation-delay: 0.75s;
+}
+.layer-3 {
+  bottom: 190px;
+  border-width: 0 140px 145px 140px;
+  animation-delay: 0.9s;
+}
+.layer-4 {
+  bottom: 140px;
+  border-width: 0 175px 155px 175px;
+  animation-delay: 1.05s;
+}
+.layer-5 {
+  bottom: 90px;
+  border-width: 0 210px 165px 210px;
+  animation-delay: 1.2s;
+}
+.layer-6 {
+  bottom: 40px;
+  border-width: 0 245px 175px 245px;
+  animation-delay: 1.35s;
+}
+
+/* Tronco */
+.trunk {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 60px;
+  height: 105px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #78350f, #3f2305);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  animation: trunk-pop 0.4s ease-out forwards;
+  animation-delay: 1.5s;
+}
+
+/* Estrella */
+.star {
+  position: absolute;
+  font-size: 52px;
+  color: #fde68a;
+  text-shadow: 0 0 10px #fbbf24, 0 0 18px #fef3c7;
+  opacity: 0;
+  left: 50%;
+  transform: translateX(-50%) scale(0.4);
+  animation: star-pop 0.6s ease-out forwards, star-glow 2s ease-in-out infinite alternate;
+}
+
+/* Nieve */
+.snowflake {
+  position: absolute;
+  top: -20px;
+  color: #e5e7eb;
+  font-size: 9px;
+  opacity: 0.6;
+  animation: snow-fall 10s linear infinite;
+}
+
+/* ===== FLASH INTENSO AL TOCAR LA ESTRELLA ===== */
+
+body.tree-flash .tree::before {
+  width: 420px;
+  height: 90px;
+  background: radial-gradient(circle at center, #16a34a, #022c22 70%);
+  filter: blur(22px);
+  opacity: 1;
+}
+
+body.tree-flash .foliage {
+  filter: drop-shadow(0 0 26px rgba(34, 197, 94, 0.95));
+}
+
+body.tree-flash .star {
+  text-shadow:
+    0 0 18px #facc15,
+    0 0 32px #fef9c3,
+    0 0 50px #fef08a;
+  transform: translateX(-50%) scale(1.25);
+}
+
+body.tree-flash .led {
+  opacity: 0.55;
+  transform: scale(1.25);
+}
+
+body.tree-flash .led-heart {
+  opacity: 1;
+  transform: scale(1.45);
+  box-shadow: 0 0 20px rgba(248, 113, 113, 1);
+}
+
+/* ===== ANIMACIONES ===== */
+
+@keyframes layer-pop {
+  from { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+@keyframes trunk-pop {
+  from { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.92); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+@keyframes star-pop {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(-6px) scale(0.3); }
+  60%  { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.15); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+@keyframes star-glow {
+  0%   { opacity: 0.85; }
+  100% { opacity: 1;    }
+}
+
+/* Nieve */
+@keyframes snow-fall {
+  0%   { transform: translateY(-20px) translateX(0); opacity: 0; }
+  10%  { opacity: 0.55; }
+  100% { transform: translateY(110vh) translateX(40px); opacity: 0; }
+}
+
+/* Texto */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .tree-wrapper {
+    transform: scale(0.8);
+  }
+}
