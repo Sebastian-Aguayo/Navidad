@@ -5,7 +5,7 @@ function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// Ecuación de corazón normalizado (x^2 + y^2 - 1)^3 - x^2 y^3 <= 0 [web:44]
+// Ecuación de corazón normalizado
 function isInHeart(nx, ny) {
   const x = nx;
   const y = ny;
@@ -33,7 +33,6 @@ function createTreeLights() {
 
   let indexGlobal = 0;
 
-  // Corazón alto y algo estrecho para que la parte superior esté bien redondeada.
   const heartCenterY = baseY + height * 0.50;
   const heartHalfWidth = baseRadius * 0.28;
   const heartHalfHeight = height * 0.26;
@@ -74,7 +73,6 @@ function createTreeLights() {
     }
   }
 
-  // Estrella
   const star = document.createElement('div');
   star.className = 'star';
   star.textContent = '★';
@@ -150,7 +148,7 @@ function createSnow() {
   }
 }
 
-// Estados fijos: corazón destacado + parpadeo general desde el inicio
+// Estados fijos
 function setupStaticLights() {
   const body = document.body;
   body.classList.add('lights-heart');
@@ -247,10 +245,152 @@ function setupStarReactiveGlow() {
   }, { passive: false });
 }
 
+// Easter egg: mantener pulsado el tronco para un latido extra del corazón
+function setupTrunkHeartBoost() {
+  const trunk = document.querySelector('.trunk');
+  const body = document.body;
+  if (!trunk) return;
+
+  let pressTimer = null;
+
+  const startPress = () => {
+    if (pressTimer) return;
+    pressTimer = setTimeout(() => {
+      body.classList.add('trunk-heart-boost');
+      setTimeout(() => {
+        body.classList.remove('trunk-heart-boost');
+      }, 900);
+      pressTimer = null;
+    }, 900);
+  };
+
+  const cancelPress = () => {
+    if (pressTimer) {
+      clearTimeout(pressTimer);
+      pressTimer = null;
+    }
+  };
+
+  // Desktop
+  trunk.addEventListener('mousedown', startPress);
+  trunk.addEventListener('mouseup', cancelPress);
+  trunk.addEventListener('mouseleave', cancelPress);
+
+  // Móvil
+  trunk.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    startPress();
+  }, { passive: false });
+
+  trunk.addEventListener('touchend', cancelPress);
+  trunk.addEventListener('touchcancel', cancelPress);
+}
+
+// Halo rosa al tocar la zona del corazón
+function setupHeartAura() {
+  const tree = document.querySelector('.tree');
+  const body = document.body;
+  if (!tree) return;
+
+  const HEART_TOP = 0.22;
+  const HEART_BOTTOM = 0.55;
+  const HEART_LEFT = 0.18;
+  const HEART_RIGHT = 0.82;
+
+  const triggerAura = () => {
+    body.classList.add('heart-aura-active');
+    setTimeout(() => {
+      body.classList.remove('heart-aura-active');
+    }, 900);
+  };
+
+  const handlePointer = (clientX, clientY) => {
+    const rect = tree.getBoundingClientRect();
+    const x = (clientX - rect.left) / rect.width;
+    const y = (clientY - rect.top) / rect.height;
+
+    if (x >= HEART_LEFT && x <= HEART_RIGHT && y >= HEART_TOP && y <= HEART_BOTTOM) {
+      triggerAura();
+    }
+  };
+
+  // Desktop
+  tree.addEventListener('click', (e) => {
+    handlePointer(e.clientX, e.clientY);
+  });
+
+  // Móvil
+  tree.addEventListener('touchend', (e) => {
+    const touch = e.changedTouches[0];
+    handlePointer(touch.clientX, touch.clientY);
+  });
+}
+
+// Abrir/cerrar regalo para mostrar la carta
+function setupGiftToggle() {
+  const giftBox = document.querySelector('.gift-box');
+  const body = document.body;
+  if (!giftBox) return;
+
+  let isOpen = false;
+
+  const toggleGift = () => {
+    isOpen = !isOpen;
+    body.classList.toggle('gift-open', isOpen);
+  };
+
+  giftBox.addEventListener('click', toggleGift);
+  giftBox.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    toggleGift();
+  }, { passive: false });
+}
+
+// CONTADOR HASTA AÑO NUEVO
+function setupNewYearCountdown() {
+  const countdownEl = document.getElementById('newyear-countdown');
+  if (!countdownEl) return;
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const nextYear = year + 1;
+  const target = new Date(nextYear, 0, 1, 0, 0, 0, 0);
+
+  function update() {
+    const current = new Date();
+    let diff = target - current;
+
+    if (diff <= 0) {
+      countdownEl.textContent = '00d 00h 00m 00s';
+      return;
+    }
+
+    const seconds = Math.floor(diff / 1000);
+    const days = Math.floor(seconds / (60 * 60 * 24));
+    const hours = Math.floor((seconds % (60 * 60 * 24)) / (60 * 60));
+    const minutes = Math.floor((seconds % (60 * 60)) / 60);
+    const secs = seconds % 60;
+
+    const pad = (n) => String(n).padStart(2, '0');
+
+    countdownEl.textContent =
+      `${pad(days)}d ${pad(hours)}h ${pad(minutes)}m ${pad(secs)}s`;
+  }
+
+  update();
+  setInterval(update, 1000);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   createTreeLights();
   createSnow();
   setupStaticLights();
   setupTreeGlowFollowPointer();
   setupStarReactiveGlow();
+  setupTrunkHeartBoost();
+  setupHeartAura();
+  setupGiftToggle();
+  setupNewYearCountdown();   // ← NUEVO
+
+  document.body.classList.add('loaded');
 });
